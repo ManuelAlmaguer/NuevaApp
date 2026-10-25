@@ -25,7 +25,9 @@ if [[ -n "$VERSION" ]]; then
   echo "→ versionName=${VERSION}  versionCode=${CODE}"
 fi
 
+mkdir -p keys
 [[ -f keystore.properties ]] || { echo "Falta keystore.properties"; exit 1; }
+[[ -f "$(sed -nE 's/^storeFile=//p' keystore.properties)" ]] || { echo "Falta el keystore (keys/release.jks)"; exit 1; }
 
 echo "→ Tests"
 ./gradlew :app:testDebugUnitTest --console=plain -q

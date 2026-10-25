@@ -15,6 +15,7 @@ local.properties
 keystore.properties
 *.jks
 *.keystore
+!keys/.gitkeep
 release/
 dist/
 
