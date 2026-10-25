@@ -63,7 +63,8 @@
 10. **Secrets de firma configurados** en GitHub Actions (4): `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, `SIGNING_KEY_PASSWORD`.
 11. **CI validada de verdad**: run `40228415548` → **success** en 3m28s (tests + build + firma + artefacto). El APK de CI presenta **la misma huella SHA-256** que el build local → firma reproducible.
 12. **Backup del keystore** en repo **privado**: `https://github.com/ManuelAlmaguer/NuevaApp-keys`.
-13. **Script `release.sh` probado**: genera `dist/NuevaApp-v1.0.0.apk` + `.sha256` y verifica la firma.
+13. **Capturas reales sin emulador**: `ScreenshotTest` renderiza la UI con Robolectric (graphics NATIVE) y escribe PNG en `app/build/screenshots/`. Útil para revisar diseño en cada iteración.
+14. **Script `release.sh` probado**: genera `dist/NuevaApp-v1.0.0.apk` + `.sha256` y verifica la firma.
     - SHA-256 del APK scaffold: `f2bf61f39559daa28f256d51141e1ab631b9a6f62346a65445cc1ebd9cdc06aa`
 
 ---
@@ -180,7 +181,8 @@ Validación manual sin publicar release: `gh workflow run android-release.yml --
 3. **`gradle.properties` tiene configuration cache activado**: si un script modifica `build.gradle.kts` en caliente, puede requerir `--no-configuration-cache`.
 4. **Los tests de UI necesitan Robolectric con `@Config(sdk = [33])`** y `testOptions.unitTests.isIncludeAndroidResources = true`. Si se quita, fallan con recursos nulos.
 5. **No hay emulador** (`/dev/kvm` ausente). No perder tiempo intentando `avdmanager`/`emulator`.
-6. **El keystore caduca en 2056**, pero **si se pierde la contraseña no hay recuperación posible**: Google Play rechazará cualquier actualización firmada con otra clave.
+6. **Captura de pantalla**: usar `ScreenshotTest` como plantilla; `captureToImage()` de Compose **no funciona** en Robolectric (timeout de redibujado) — hay que dibujar `decorView` sobre un `Canvas` (ya implementado).
+7. **El keystore caduca en 2056**, pero **si se pierde la contraseña no hay recuperación posible**: Google Play rechazará cualquier actualización firmada con otra clave.
 7. Las contraseñas del keystore están en texto plano en `keystore.properties` (local, git-ignored) — nunca mover ese archivo al repo.
 8. `versionCode` se calcula como `MAJOR*10000 + MINOR*100 + PATCH` en `release.sh`: no editarlo a mano para no romper el orden de actualizaciones.
 9. `local.properties` (ruta del SDK) es local y git-ignored; en CI lo genera `android-actions/setup-android`.
