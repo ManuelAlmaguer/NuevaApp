@@ -200,6 +200,8 @@ aapt2 dump badging app/build/outputs/apk/release/app-release.apk | head -1
 ```
 Esperado: `Verifies`, `v2 scheme: true`, `v3 scheme: true`, `versionName='1.0.0'`.
 
+**Prueba de reproducibilidad (hecha):** clonar el repo en un directorio limpio, copiar `keys/release.jks` + `keystore.properties`, `./gradlew :app:assembleRelease` → BUILD OK y firma válida. El repo es autocontenido salvo el keystore.
+
 ---
 
 ## 11. Definición de "terminado" para el usuario
