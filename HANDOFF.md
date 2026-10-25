@@ -1,7 +1,7 @@
 # HANDOFF — NuevaApp (Android)
 
 > **Documento de traspaso.** Léelo completo antes de tocar el proyecto.
-> Última actualización: **2026-10-25** · Sesión: bootstrap de entorno + repositorio + pipeline de release.
+> Última actualización: **2026-10-25** · Sesión 1: bootstrap de entorno + repositorio + pipeline de release **verificado en local y en CI**.
 > Estado global: **INFRAESTRUCTURA LISTA · CONTENIDO DE LA APP PENDIENTE**.
 
 ---
@@ -59,6 +59,12 @@
 6. **Tests reales en JVM** con Robolectric (`MainActivityTest`): 2/2 en verde. Verifican que la Activity arranca y que la UI Compose se renderiza y muestra textos. **Esto es la red de seguridad del proyecto**: sin emulador, es la única prueba de ejecución real.
 7. **CI/CD**: `.github/workflows/android-release.yml` — tests → build release → verificación de firma → artefacto; en tags `v*.*.*` publica GitHub Release con el APK.
 8. **Scripts operativos**: `scripts/setup_env.sh`, `scripts/release.sh`, `scripts/generate_icons.py`.
+9. **Repositorio creado y publicado**: `https://github.com/ManuelAlmaguer/NuevaApp` (rama `main`).
+10. **Secrets de firma configurados** en GitHub Actions (4): `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, `SIGNING_KEY_PASSWORD`.
+11. **CI validada de verdad**: run `40228415548` → **success** en 3m28s (tests + build + firma + artefacto). El APK de CI presenta **la misma huella SHA-256** que el build local → firma reproducible.
+12. **Backup del keystore** en repo **privado**: `https://github.com/ManuelAlmaguer/NuevaApp-keys`.
+13. **Script `release.sh` probado**: genera `dist/NuevaApp-v1.0.0.apk` + `.sha256` y verifica la firma.
+    - SHA-256 del APK scaffold: `f2bf61f39559daa28f256d51141e1ab631b9a6f62346a65445cc1ebd9cdc06aa`
 
 ---
 
@@ -124,8 +130,8 @@ gh release create v1.0.0 dist/NuevaApp-v1.0.0.apk \
   --repo ManuelAlmaguer/NuevaApp --title "NuevaApp v1.0.0" --notes "..."
 ```
 
-### Opción B — GitHub Actions (configurada, pendiente de secretos)
-Añadir en *Settings → Secrets and variables → Actions*:
+### Opción B — GitHub Actions (configurada y verificada)
+Los secretos **ya están cargados** en el repo. Referencia de lo que contienen:
 | Secret | Contenido |
 |---|---|
 | `SIGNING_KEYSTORE_BASE64` | `base64 -w0 keys/release.jks` |
@@ -134,6 +140,7 @@ Añadir en *Settings → Secrets and variables → Actions*:
 | `SIGNING_KEY_PASSWORD` | contraseña de la clave |
 
 Luego: `git tag v1.0.0 && git push origin v1.0.0` → Release con APK adjunto.
+Validación manual sin publicar release: `gh workflow run android-release.yml --repo ManuelAlmaguer/NuevaApp -f version=x.y.z` (solo sube artefacto).
 
 ---
 
@@ -159,9 +166,9 @@ Luego: `git tag v1.0.0 && git push origin v1.0.0` → Release con APK adjunto.
 - [ ] Construir pantallas reales y navegación (`androidx.navigation-compose`).
 - [ ] Sustituir iconos/colores/`app_name` por la identidad definitiva de la app.
 - [ ] Ampliar tests Robolectric por pantalla + tests unitarios de lógica.
-- [ ] Subir secretos de firma a GitHub Actions y validar la CI con un `workflow_dispatch`.
-- [ ] Tag `v1.0.0` + GitHub Release con APK firmado final (criterio de entrega del usuario).
-- [ ] Crear repo privado `NuevaApp-keys` con el backup del keystore.
+- [x] ~~Subir secretos de firma a GitHub Actions y validar la CI con un `workflow_dispatch`.~~ (hecho: run 40228415548 ✅)
+- [x] ~~Crear repo privado `NuevaApp-keys` con el backup del keystore.~~ (hecho)
+- [ ] Tag `v1.0.0` + GitHub Release con APK firmado final (criterio de entrega del usuario) — **bloqueado hasta tener la app real**.
 - [ ] (Opcional) AAB para Play Store; `store/icon-512.png` y capturas ya previstas.
 
 ---
