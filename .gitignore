@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+!app/build/outputs/mapping/
+local.properties
+.kotlin/
+*.hprof
+
+# Android Studio / IDE
+.idea/
+*.iml
+.DS_Store
+
+# Signing material — NEVER commit
+keystore.properties
+*.jks
+*.keystore
+release/
+dist/
+
+# OS
+Thumbs.db
